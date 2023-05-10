@@ -1,0 +1,62 @@
+plugins {
+	id 'org.springframework.boot' version '3.0.6'
+	id 'io.spring.dependency-management' version '1.1.0'
+	id 'java'
+	id 'jacoco'
+	id 'org.asciidoctor.jvm.convert' version '3.3.2'
+}
+
+group = 'com.satesh'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = '17'
+
+ext {
+	snippetsDir = file('build/generated-snippets')
+}
+
+configurations {
+    asciidoctorExt
+}
+
+asciidoctor {
+    dependsOn test
+    configurations 'asciidoctorExt'
+	sourceDir 'src/docs/asciidoc'
+	outputDir  file('build/docs')
+	attributes \
+		'snippets': snippetsDir
+    dependsOn test
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacoco/test/html/')
+    }
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.integration:spring-integration-jmx'
+	implementation 'io.springfox:springfox-boot-starter:3.0.0'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	
+	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+}
+
+test {
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    finalizedBy asciidoctor
+}

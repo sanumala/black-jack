@@ -1,0 +1,14 @@
+*.class
+*.jar
+*.zip
+*.tmp
+*.out
+
+.classpath
+.project
+.settings
+
+/build
+/tmp
+/.gradle
+/bin/
